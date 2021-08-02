@@ -4,6 +4,7 @@ import pytest
 
 from logger.data_handlers import JsonHandler
 from logger.log_entry import LogEntry
+from logger.logger_handlers import LoggerReader
 
 
 @pytest.fixture
@@ -28,3 +29,9 @@ def log_entries_json_data():
 def log_entry():
     temp_log_entry = LogEntry(datetime(2021, 1, 1), 'ERROR', 'test_message')
     return temp_log_entry
+
+
+@pytest.fixture
+def json_logger_reader(json_handler):
+    temp_json_logger_reader = LoggerReader(json_handler)
+    return temp_json_logger_reader
