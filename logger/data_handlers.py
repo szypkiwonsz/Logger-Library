@@ -28,8 +28,8 @@ class JsonHandler(Handler):
         Loads data into json file.
         :param data: <list> -> data to load
         """
-        with open(self.file_name, 'w') as f:
-            json.dump(data, f, indent=4, sort_keys=True)
+        with open(self.file_name, 'w') as file:
+            json.dump(data, file, indent=4, sort_keys=True)
 
     def load_log_entry_data_into_file(self, log_entry):
         """
