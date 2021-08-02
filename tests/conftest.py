@@ -18,7 +18,7 @@ def log_entries_json_data():
         {
             "date": "2021-07-31 12:12:19",
             "level": "CRITICAL",
-            "msg": "xd"
+            "msg": "test_msg"
         }
     ]'''
     return json_log_entries
