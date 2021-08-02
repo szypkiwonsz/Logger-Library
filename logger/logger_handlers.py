@@ -70,3 +70,22 @@ class LoggerSaver:
         """
         log_priority = {'DEBUG': 1, 'INFO': 2, 'WARNING': 3, 'ERROR': 4, 'CRITICAL': 5}
         self.log_level = log_priority[log_level]
+
+
+class LoggerReader:
+    """Class storing methods which are responsible for reading log entries from selected file."""
+
+    def __init__(self, handler):
+        self.handler = handler
+
+    def find_by_text(self, text):
+        """
+        Finds log entries with selected text.
+        :param text: <str> -> text to find
+        :return: <list> -> list of log entries with selected text
+        """
+        data = []
+        for element in self.handler.get_data_from_file():
+            if text == element['msg']:
+                data.append(element)
+        return data
