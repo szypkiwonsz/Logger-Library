@@ -78,14 +78,28 @@ class LoggerReader:
     def __init__(self, handler):
         self.handler = handler
 
-    def find_by_text(self, text):
+    def find_by_text(self, text, start_date=None, end_date=None):
         """
         Finds log entries with selected text.
         :param text: <str> -> text to find
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
         :return: <list> -> list of log entries with selected text
         """
         data = []
-        for element in self.handler.get_data_from_file():
-            if text == element['msg']:
-                data.append(element)
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            for element in self.handler.get_data_from_file():
+                if start_date and end_date:
+                    if start_date < datetime.fromisoformat(element['date']) < end_date:
+                        data.append(element)
+                elif start_date and not end_date:
+                    if start_date < datetime.fromisoformat(element['date']):
+                        data.append(element)
+                else:
+                    if end_date > datetime.fromisoformat(element['date']):
+                        data.append(element)
+        else:
+            for element in self.handler.get_data_from_file():
+                if text == element['msg']:
+                    data.append(element)
         return data
