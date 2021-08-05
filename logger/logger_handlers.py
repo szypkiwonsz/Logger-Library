@@ -78,6 +78,22 @@ class LoggerReader:
     def __init__(self, handler):
         self.handler = handler
 
+    @staticmethod
+    def filter_by_date(start_date, end_date, data):
+        """
+        Filters data by provided dates.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :param data: <list> -> list of log entries
+        :return: <list> -> list of filtered log entries
+        """
+        if start_date and end_date:
+            return list(filter(lambda x: start_date < datetime.fromisoformat(x['date']) < end_date, data))
+        elif start_date and not end_date:
+            return list(filter(lambda x: start_date < datetime.fromisoformat(x['date']), data))
+        else:
+            return list(filter(lambda x: datetime.fromisoformat(x['date']) < end_date, data))
+
     def find_by_text(self, text, start_date=None, end_date=None):
         """
         Finds log entries with selected text.
@@ -86,20 +102,7 @@ class LoggerReader:
         :param end_date: <datetime> -> end date
         :return: <list> -> list of log entries with selected text
         """
-        data = []
+        data = list(filter(lambda x: text in x['msg'], self.handler.get_data_from_file()))
         if start_date or end_date:  # if any datetime is given, filter according to that datetime
-            for element in self.handler.get_data_from_file():
-                if start_date and end_date:
-                    if start_date < datetime.fromisoformat(element['date']) < end_date:
-                        data.append(element)
-                elif start_date and not end_date:
-                    if start_date < datetime.fromisoformat(element['date']):
-                        data.append(element)
-                else:
-                    if end_date > datetime.fromisoformat(element['date']):
-                        data.append(element)
-        else:
-            for element in self.handler.get_data_from_file():
-                if text == element['msg']:
-                    data.append(element)
+            data = self.filter_by_date(start_date, end_date, data)
         return data
