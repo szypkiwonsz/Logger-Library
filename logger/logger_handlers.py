@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from logger.log_entry import LogEntry
@@ -103,6 +104,19 @@ class LoggerReader:
         :return: <list> -> list of log entries with selected text
         """
         data = list(filter(lambda x: text in x['msg'], self.handler.get_data_from_file()))
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            data = self.filter_by_date(start_date, end_date, data)
+        return data
+
+    def find_by_regex(self, regex, start_date=None, end_date=None):
+        """
+        Finds log entries with selected regex.
+        :param regex: <str> -> regex to find
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :return: <list> -> list of log entries with selected regex
+        """
+        data = list(filter(lambda x: re.search(regex, x['msg']), self.handler.get_data_from_file()))
         if start_date or end_date:  # if any datetime is given, filter according to that datetime
             data = self.filter_by_date(start_date, end_date, data)
         return data
