@@ -1,3 +1,4 @@
+import csv
 import json
 
 
@@ -40,3 +41,20 @@ class JsonHandler(Handler):
         data_from_file = self.get_data_from_file()
         data_from_file.append(data_to_save)
         self.load_data_into_file(data_from_file)
+
+
+class CSVHandler(Handler):
+    """Inheriting class storing methods to handler CSV files."""
+
+    def get_data_from_file(self):
+        """
+        Gets data from csv file.
+        :return: <list> -> list of dict log entries
+        """
+        try:
+            with open(self.file_name, 'r') as file:
+                reader = csv.DictReader(file)
+                data = list(reader)
+        except FileNotFoundError:
+            data = []
+        return data
