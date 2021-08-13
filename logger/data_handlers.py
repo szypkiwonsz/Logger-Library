@@ -58,3 +58,15 @@ class CSVHandler(Handler):
         except FileNotFoundError:
             data = []
         return data
+
+    def load_data_into_file(self, data):
+        """
+        Loads data into csv file.
+        :param data: <list> -> data to load
+        """
+        with open(self.file_name, 'a') as file:
+            fieldnames = ['date', 'level', 'msg']
+            writer = csv.DictWriter(file, fieldnames=fieldnames, lineterminator='\n')
+            if file.tell() == 0:  # if file not exists, write headers
+                writer.writeheader()
+            writer.writerow(data)
