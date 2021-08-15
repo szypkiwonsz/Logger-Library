@@ -70,3 +70,11 @@ class CSVHandler(Handler):
             if file.tell() == 0:  # if file not exists, write headers
                 writer.writeheader()
             writer.writerow(data)
+
+    def load_log_entry_data_into_file(self, log_entry):
+        """
+        Loads log entry into csv file.
+        :param log_entry: <logger.log_entry.LogEntry> -> class representing log entry
+        """
+        data_to_save = log_entry.json_log_entry()
+        self.load_data_into_file(data_to_save)
