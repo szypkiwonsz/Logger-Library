@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from logger.data_handlers import JsonHandler
+from logger.data_handlers import JsonHandler, CSVHandler
 from logger.log_entry import LogEntry
 from logger.logger_handlers import LoggerReader
 
@@ -35,3 +35,16 @@ def log_entry():
 def json_logger_reader(json_handler):
     temp_json_logger_reader = LoggerReader(json_handler)
     return temp_json_logger_reader
+
+
+@pytest.fixture
+def csv_handler():
+    temp_csv_handler = CSVHandler('test_file.csv')
+    return temp_csv_handler
+
+
+@pytest.fixture
+def log_entries_csv_data():
+    csv_log_entries = '''date,level,msg
+2021-01-01 00:00:00,ERROR,test_message'''
+    return csv_log_entries
