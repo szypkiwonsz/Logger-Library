@@ -120,3 +120,29 @@ class LoggerReader:
         if start_date or end_date:  # if any datetime is given, filter according to that datetime
             data = self.filter_by_date(start_date, end_date, data)
         return data
+
+    def group_by_level(self, start_date=None, end_date=None):
+        """
+        Groups log entries by log level priority.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :return: <list> -> list of log entries grouped by level
+        """
+        log_priority = {'DEBUG': 1, 'INFO': 2, 'WARNING': 3, 'ERROR': 4, 'CRITICAL': 5}
+        data = sorted(self.handler.get_data_from_file(), key=lambda x: log_priority[x['level']], reverse=True)
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            data = self.filter_by_date(start_date, end_date, data)
+        return data
+
+    def group_by_month(self, start_date=None, end_date=None):
+        """
+        Groups log entries by month date.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :return: <list> -> list of log entries grouped by month date
+        """
+        data = sorted(self.handler.get_data_from_file(), key=lambda x: datetime.fromisoformat(x['date']).month,
+                      reverse=True)
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            data = self.filter_by_date(start_date, end_date, data)
+        return data
