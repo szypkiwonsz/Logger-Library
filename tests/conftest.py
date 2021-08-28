@@ -48,3 +48,32 @@ def log_entries_csv_data():
     csv_log_entries = '''date,level,msg
 2021-01-01 00:00:00,ERROR,test_message'''
     return csv_log_entries
+
+
+@pytest.fixture
+def list_of_log_entries():
+    log_entries = [
+        {
+            "date": "2021-07-31 12:12:19",
+            "level": "CRITICAL",
+            "msg": "test_msg"
+        }
+    ]
+    return log_entries
+
+
+@pytest.fixture
+def log_entries_json_data_to_group():
+    json_log_entries = '''[
+        {
+            "date": "2021-06-30 12:12:19",
+            "level": "CRITICAL",
+            "msg": "test_msg"
+        },
+        {
+            "date": "2021-07-30 12:12:19",
+            "level": "ERROR",
+            "msg": "test_msg"
+        }
+    ]'''
+    return json_log_entries
