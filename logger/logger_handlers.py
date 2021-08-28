@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from logger.log_entry import LogEntry
@@ -78,14 +79,80 @@ class LoggerReader:
     def __init__(self, handler):
         self.handler = handler
 
-    def find_by_text(self, text):
+    @staticmethod
+    def validate_dates(start_date, end_date):
+        """
+        Checks if end_date is before start_date, if so raise an exception.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        """
+        if start_date > end_date:
+            raise ValueError('start_date must be before end_date')
+
+    def filter_by_date(self, start_date, end_date, data):
+        """
+        Filters data by provided dates.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :param data: <list> -> list of log entries
+        :return: <list> -> list of filtered log entries
+        """
+        if start_date and end_date:
+            self.validate_dates(start_date, end_date)
+            return list(filter(lambda x: start_date < datetime.fromisoformat(x['date']) < end_date, data))
+        elif start_date and not end_date:
+            return list(filter(lambda x: start_date < datetime.fromisoformat(x['date']), data))
+        else:
+            return list(filter(lambda x: datetime.fromisoformat(x['date']) < end_date, data))
+
+    def find_by_text(self, text, start_date=None, end_date=None):
         """
         Finds log entries with selected text.
         :param text: <str> -> text to find
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
         :return: <list> -> list of log entries with selected text
         """
-        data = []
-        for element in self.handler.get_data_from_file():
-            if text == element['msg']:
-                data.append(element)
+        data = list(filter(lambda x: text in x['msg'], self.handler.get_data_from_file()))
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            data = self.filter_by_date(start_date, end_date, data)
+        return data
+
+    def find_by_regex(self, regex, start_date=None, end_date=None):
+        """
+        Finds log entries with selected regex.
+        :param regex: <str> -> regex to find
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :return: <list> -> list of log entries with selected regex
+        """
+        data = list(filter(lambda x: re.search(regex, x['msg']), self.handler.get_data_from_file()))
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            data = self.filter_by_date(start_date, end_date, data)
+        return data
+
+    def group_by_level(self, start_date=None, end_date=None):
+        """
+        Groups log entries by log level priority.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :return: <list> -> list of log entries grouped by level
+        """
+        log_priority = {'DEBUG': 1, 'INFO': 2, 'WARNING': 3, 'ERROR': 4, 'CRITICAL': 5}
+        data = sorted(self.handler.get_data_from_file(), key=lambda x: log_priority[x['level']], reverse=True)
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            data = self.filter_by_date(start_date, end_date, data)
+        return data
+
+    def group_by_month(self, start_date=None, end_date=None):
+        """
+        Groups log entries by month date.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        :return: <list> -> list of log entries grouped by month date
+        """
+        data = sorted(self.handler.get_data_from_file(), key=lambda x: datetime.fromisoformat(x['date']).month,
+                      reverse=True)
+        if start_date or end_date:  # if any datetime is given, filter according to that datetime
+            data = self.filter_by_date(start_date, end_date, data)
         return data
