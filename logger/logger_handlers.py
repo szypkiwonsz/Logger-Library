@@ -80,7 +80,16 @@ class LoggerReader:
         self.handler = handler
 
     @staticmethod
-    def filter_by_date(start_date, end_date, data):
+    def validate_dates(start_date, end_date):
+        """
+        Checks if end_date is before start_date, if so raise an exception.
+        :param start_date: <datetime> -> start date
+        :param end_date: <datetime> -> end date
+        """
+        if start_date > end_date:
+            raise ValueError('start_date must be before end_date')
+
+    def filter_by_date(self, start_date, end_date, data):
         """
         Filters data by provided dates.
         :param start_date: <datetime> -> start date
@@ -89,6 +98,7 @@ class LoggerReader:
         :return: <list> -> list of filtered log entries
         """
         if start_date and end_date:
+            self.validate_dates(start_date, end_date)
             return list(filter(lambda x: start_date < datetime.fromisoformat(x['date']) < end_date, data))
         elif start_date and not end_date:
             return list(filter(lambda x: start_date < datetime.fromisoformat(x['date']), data))
